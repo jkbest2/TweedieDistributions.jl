@@ -3,11 +3,16 @@ module TweedieDistributions
 using Distributions
 using Random
 
+import Distributions: mean, var, succprob, failprob
 import Base.rand
 
 export Tweedie,
     CompoundPoissonGamma,
-    rand
+    rand,
+    mean,
+    var,
+    succprob,
+    failprob
 
 abstract type AbstractTweedie <: Distribution{Univariate,Continuous} end
 
@@ -45,11 +50,10 @@ struct CompoundPoissonGamma{T} <: AbstractTweedie
         μ > 0 || throw("Mean must be positive")
         ϕ > 0 || throw("Variance parameter must be positive")
         1 < p < 2 ||
-            throw("CPG requires 1 < p < 2, otherwise use more general Tweedie.")
+            throw("CPG requires 1 < p < 2, otherwise use Tweedie.")
         new{T}(μ, p, ϕ)
     end
 end
-
 
 function CompoundPoissonGamma(Tw::Tweedie)
     CompoundPoissonGamma(Tw.μ, Tw.p, Tw.ϕ)
@@ -59,15 +63,40 @@ function CompoundPoissonGamma(μ, p, ϕ)
     μ_prom, p_prom, ϕ_prom = promote(μ, p, ϕ)
 end
 
+@inline function _cpg_poissonmean(CPG::CompoundPoissonGamma)
+    CPG.μ^(2 - CPG.p) / ((2 - CPG.p) * CPG.ϕ)
+end
+
+@inline function _cpg_gammashape(CPG::CompoundPoissonGamma)
+    gam_shape = (2 - CPG.p) / (CPG.p - 1)
+end
+
+@inline function _cpg_gammarate(CPG::CompoundPoissonGamma)
+    CPG.ϕ * (CPG.p - 1) * CPG.μ ^ (CPG.p - 1)
+end
+
 function rand(rng::Random.AbstractRNG, CPG::CompoundPoissonGamma{T}) where T
-    pois_mean = CPG.μ^(2 - CPG.p) / ((2 - CPG.p) * CPG.ϕ)
+    pois_mean = _cpg_poissonmean(CPG)
     N = rand(rng, Poisson(pois_mean))
     N == 0 && return zero(T)
-    gam_shape = N * (2 - CPG.p) / (CPG.p - 1)
-    gam_rate = CPG.ϕ * (CPG.p - 1) * CPG.μ ^ (CPG.p - 1)
+    gam_shape = N * _cpg_gammashape(CPG)
+    gam_rate = _cpg_gammarate(CPG)
     rand(rng, Gamma(gam_shape, gam_rate))
 end
 
+mean(Tw::AbstractTweedie) = Tw.μ
+var(Tw::AbstractTweedie) = Tw.ϕ * Tw.μ ^ Tw.p
+
 rand(CPG::CompoundPoissonGamma) = rand(Random.GLOBAL_RNG, CPG)
+
+function succprob(CPG::CompoundPoissonGamma{T}) where T
+    N = _cpg_poissonmean(CPG)
+    ccdf(Poisson(N), zero(T))
+end
+
+function failprob(CPG::CompoundPoissonGamma{T}) where T
+    N = _cpg_poissonmean(CPG)
+    cdf(Poisson(N), zero(T))
+end
 
 end # module
