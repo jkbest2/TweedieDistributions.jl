@@ -1,4 +1,4 @@
-# Tweedie
+# TweedieDistributions
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://jkbest2.github.io/Tweedie.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://jkbest2.github.io/Tweedie.jl/dev)

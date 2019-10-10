@@ -1,7 +1,11 @@
-name = "Tweedie"
+name = "TweedieDistributions"
 uuid = "074c098c-c2ce-40ce-9d8c-a479c1fc98cf"
 authors = ["John Best"]
 version = "0.1.0"
+
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 julia = "1"
