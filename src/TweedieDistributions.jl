@@ -47,7 +47,7 @@ struct CompoundPoissonGamma{T} <: AbstractTweedie
     ϕ::T
 
     function CompoundPoissonGamma(μ::T, p::T, ϕ::T) where T
-        μ > 0 || throw("Mean must be positive")
+        μ ≥ 0 || throw("Mean must be nonnegative")
         ϕ > 0 || throw("Variance parameter must be positive")
         1 < p < 2 ||
             throw("CPG requires 1 < p < 2, otherwise use Tweedie.")
