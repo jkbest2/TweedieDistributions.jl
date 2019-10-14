@@ -14,7 +14,7 @@ export Tweedie,
     succprob,
     failprob
 
-abstract type AbstractTweedie <: Distribution{Univariate,Continuous} end
+abstract type AbstractTweedie{T} <: Distribution{Univariate,Continuous} end
 
 """
     Tweedie{T}
@@ -26,7 +26,7 @@ Tweedie distribution. Typically used with 1 < ξ < 2 to give compound
 gamma-Poisson. Has positive mass at zero, and is continuous for positive
 Reals.
 """
-struct Tweedie{T} <: AbstractTweedie
+struct Tweedie{T} <: AbstractTweedie{T}
     μ::T
     p::T
     ϕ::T
@@ -41,7 +41,7 @@ end
 A Tweedie distribution with ``1 < p < 2`` is a compound Poisson-Gamma
 distribution, making it more straightforward to draw random samples from.
 """
-struct CompoundPoissonGamma{T} <: AbstractTweedie
+struct CompoundPoissonGamma{T} <: AbstractTweedie{T}
     μ::T
     p::T
     ϕ::T
