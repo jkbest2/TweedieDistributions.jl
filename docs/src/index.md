@@ -1,8 +1,8 @@
-# Tweedie.jl
+# TweedieDistributions.jl
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [Tweedie]
+Modules = [TweedieDistributions]
 ```
