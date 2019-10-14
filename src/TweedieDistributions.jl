@@ -61,6 +61,7 @@ end
 
 function CompoundPoissonGamma(μ, p, ϕ)
     μ_prom, p_prom, ϕ_prom = promote(μ, p, ϕ)
+    CompoundPoissonGamma(μ_prom, p_prom, ϕ_prom)
 end
 
 @inline function _cpg_poissonmean(CPG::CompoundPoissonGamma)
