@@ -1,4 +1,4 @@
-using Documenter, Tweedie
+using Documenter, TweedieDistributions
 
 makedocs(;
     modules=[TweedieDistributions],
