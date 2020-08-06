@@ -3,8 +3,8 @@ module TweedieDistributions
 using Distributions
 using Random
 
-import Distributions: mean, var, succprob, failprob
-import Base.rand
+import Distributions: mean, var, succprob, failprob, insupport
+import Base: rand, minimum, maximum
 
 export Tweedie,
     CompoundPoissonGamma,
@@ -99,5 +99,10 @@ function failprob(CPG::CompoundPoissonGamma{T}) where T
     N = _cpg_poissonmean(CPG)
     cdf(Poisson(N), zero(T))
 end
+
+minimum(CPG::CompoundPoissonGamma{T}) where T = zero(T)
+maximum(CPG::CompoundPoissonGamma) = Inf
+# Need to restrict `x` to ::Real or dispatch is ambiguous
+insupport(CPG::CompoundPoissonGamma, x::Real) = 0 ≤ x < Inf
 
 end # module

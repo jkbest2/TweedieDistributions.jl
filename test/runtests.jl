@@ -35,5 +35,7 @@ cpg2_ci = cdf(Normal(), 0.975) *
     @test (n - 1) * var(cpg2_randvec) / quantile(Chisq(n - 1), 0.975) <
         var(CPG2) <
         (n - 1) * var(cpg2_randvec) / quantile(Chisq(n - 1), 0.025)
-    # @test lo
+    @test minimum(CPG1) == 0
+    @test maximum(CPG2) == Inf
+    @test all(insupport.(CPG2, cpg2_randvec))
 end
