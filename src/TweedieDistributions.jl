@@ -76,19 +76,21 @@ end
     CPG.ϕ * (CPG.p - 1) * CPG.μ ^ (CPG.p - 1)
 end
 
-function rand(rng::Random.AbstractRNG, CPG::CompoundPoissonGamma{T}) where T
-    pois_mean = _cpg_poissonmean(CPG)
-    N = rand(rng, Poisson(pois_mean))
-    N == 0 && return zero(T)
-    gam_shape = N * _cpg_gammashape(CPG)
-    gam_rate = _cpg_gammarate(CPG)
-    rand(rng, Gamma(gam_shape, gam_rate))
-end
+sampler(cpg::CompoundPoissonGamma) = CompoundPoissonGammaSampler(cpg)
+rand(rng::AbstractRNG, cpg::CompoundPoissonGamma) = rand(rng, sampler(cpg))
+
+# function rand(rng::Random.AbstractRNG, CPG::CompoundPoissonGamma{T}) where T
+#     pois_mean = _cpg_poissonmean(CPG)
+#     N = rand(rng, Poisson(pois_mean))
+#     N == 0 && return zero(T)
+#     gam_shape = N * _cpg_gammashape(CPG)
+#     gam_rate = _cpg_gammarate(CPG)
+# end
 
 mean(Tw::AbstractTweedie) = Tw.μ
 var(Tw::AbstractTweedie) = Tw.ϕ * Tw.μ ^ Tw.p
 
-rand(CPG::CompoundPoissonGamma) = rand(Random.GLOBAL_RNG, CPG)
+# rand(CPG::CompoundPoissonGamma) = rand(Random.GLOBAL_RNG, CPG)
 
 function succprob(CPG::CompoundPoissonGamma{T}) where T
     N = _cpg_poissonmean(CPG)
@@ -104,5 +106,25 @@ minimum(CPG::CompoundPoissonGamma{T}) where T = zero(T)
 maximum(CPG::CompoundPoissonGamma) = Inf
 # Need to restrict `x` to ::Real or dispatch is ambiguous
 insupport(CPG::CompoundPoissonGamma, x::Real) = 0 ≤ x < Inf
+
+struct CompoundPoissonGammaSampler{T} <: Sampleable{Univariate, Continuous}
+    λ::T
+    α::T
+    θ::T
+end
+
+function CompoundPoissonGammaSampler(CPG::CompoundPoissonGamma{T}) where T
+    λ = _cpg_poissonmean(CPG)
+    α = _cpg_gammashape(CPG)
+    θ = _cpg_gammarate(CPG)
+    CompoundPoissonGammaSampler{T}(λ, α, θ)
+end
+
+function rand(rng::Random.AbstractRNG, cpgs::CompoundPoissonGammaSampler{T}) where T
+    N = rand(rng, Poisson(cpgs.λ))
+    N == 0 && return zero(T)
+    rand(rng, Gamma(N * cpgs.α, cpgs.θ))
+end
+rand(cpgs::CompoundPoissonGammaSampler) = rand(Random._GLOBAL_RNG, cpgs)
 
 end # module
