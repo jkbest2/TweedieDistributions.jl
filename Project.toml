@@ -1,7 +1,7 @@
 name = "TweedieDistributions"
 uuid = "074c098c-c2ce-40ce-9d8c-a479c1fc98cf"
 authors = ["John Best"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
