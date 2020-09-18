@@ -125,6 +125,6 @@ function rand(rng::Random.AbstractRNG, cpgs::CompoundPoissonGammaSampler{T}) whe
     N == 0 && return zero(T)
     rand(rng, Gamma(N * cpgs.α, cpgs.θ))
 end
-rand(cpgs::CompoundPoissonGammaSampler) = rand(Random._GLOBAL_RNG, cpgs)
+rand(cpgs::CompoundPoissonGammaSampler) = rand(Random.GLOBAL_RNG, cpgs)
 
 end # module
